@@ -29,11 +29,28 @@ Decision: the D core never links Filament directly. `librenderer_filament.so`
 (C++/JNI shim) exports `dsl_renderer_*`. Benefit: the day someone writes their
 own renderer, the engine literally cannot notice.
 
-### D5 — Mobile-first, arm64-v8a first
+### D5 — Mobile-first, dual ABI (arm64-v8a + armeabi-v7a)
 Spec: *"run test on mobile… GitHub Actions to build apk."*
-Decision: CI builds the D core for `arm64-v8a` and assembles a debug APK each
-push. `armeabi-v7a` and `x86_64` are one line each in `build_android.sh` when
-we need them.
+Decision: CI builds the D core and assembles a debug APK each push.
+`arm64-v8a` is the primary target, and `armeabi-v7a` ships alongside it
+from day one because the reference test device (see D11) is Android Go
+class — and many Go devices run a **32-bit userspace on 64-bit silicon**,
+where an arm64-only `.so` would never load. `x86_64` stays one commented
+line away in `build_android.sh`.
+
+### D11 — Reference test hardware: Android Go, 4 GB RAM
+Decision: the first hardware profile we optimize against is the owner's
+low-end Android Go phone (arm64 SoC, 4 GB RAM, 128 GB storage). Practical
+consequences:
+
+- **Ship price is truth**: if it doesn't hit budget on this device, it
+  isn't done — the debug overlay reports real numbers, we tune to them.
+- **Budgets for first-stage**: 60 fps on simple primitive scenes at native
+  res (GLES3 backend for Filament — Vulkan on Go devices is rare);
+  game heap target ≤ 256 MB live; APK stays lean (dual-ABI universal
+  debug APK is fine until M9).
+- The Hub prints the device's `SUPPORTED_ABIS` on the Cores tab so the
+  32/64-bit userspace question is answered by the app itself on first run.
 
 ### D6 — No 3D model editing in the engine
 Spec: *"No 3d editing tool… basic moves (intrude/extrude/scale) only as a
