@@ -5,9 +5,15 @@ Order is deliberate: pipeline proof → talk to core → see pixels → touch ph
 
 | # | Milestone | Deliverable | Status |
 |---|-----------|-------------|--------|
-| M0 | **Hub + core skeleton + CI** | D core (betterC) compiles to `.so` host + arm64; ABI smoke test passes; Hub app (projects/templates/cores tabs); GitHub Actions builds APK | ✅ done |
-| M1 | **JNI bridge** | Hub's Cores tab shows fields read *live* from `libdsluck.so` (`dsl_engine_version`, ABI check, spawn/tick from Kotlin) | next |
-| M2 | **Editor shell** | Editor app module: left file tree, bottom asset shelf, 2D UI canvas, Filament viewport rendering a clear color + skybox | |
+Direction: **Contract → Pixels → Forces.** The replaceable-core idea is not a
+separate milestone — it's the ABI (M0) plus the module loader (M1). Filament is
+the loader's first real passenger, physics rides the same loader later.
+
+| # | Milestone | Deliverable | Status |
+|---|-----------|-------------|--------|
+| M0 | **Hub + core skeleton + CI** | D core (betterC) compiles to `.so` host + arm64/armv7 + windows dll; ABI smoke test passes; Hub app (projects/templates/cores tabs); GitHub Actions builds APK | ✅ done |
+| M1 | **Bridge + module loader (the swap, made real)** | JNI bridge: Cores tab shows live `libdsluck.so` values (version, ABI, tick counter). **Module system v1**: manifest.json + loader + family headers; **null renderer** module; hub loads/swaps modules on-device without rebuild | next |
+| M2 | **Pixels through the seam** | Editor shell (left file tree, bottom asset shelf, 2D UI canvas) + **Filament via `librenderer_filament.so`**: clear color → skybox. *On-device demo: swap null↔filament renderer, no rebuild* | |
 | M3 | **First 3D** | Orbit camera; spawn cone/capsule/box; HDR environment; object select + move | |
 | M4 | **Assets** | import `.glb/.gltf` (incl. renamed files — sniff magic bytes, not extensions); textures; `.mat` compile via matc; runtime conversion pipeline | |
 | M5 | **Physics** | Box3D module (gravity, collisions on primitives) + Box2D for 2D; *swapability demo: same scene, Jolt `.so` dropped in* | |

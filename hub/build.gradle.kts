@@ -55,3 +55,10 @@ android {
 
     sourceSets["main"].jniLibs.srcDir("src/androidMain/jniLibs")
 }
+
+// Desktop (Windows/macOS/Linux) hub — same UI code, `gradle :hub:run`.
+compose.desktop {
+    application {
+        mainClass = "io.dsluck.hub.MainKt"
+    }
+}

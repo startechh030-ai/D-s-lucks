@@ -1,4 +1,4 @@
-name: Android — Hub + D Core
+name: D's Luck — Core + Apps
 
 on:
   push:
@@ -41,6 +41,32 @@ jobs:
         with:
           name: dsluck-core-android
           path: core/build/android/**
+          retention-days: 30
+
+  core-windows:
+    name: Core → dsluck.dll (Windows x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LDC ${{ env.LDC_VERSION }}
+        uses: dlang-community/setup-dlang@v2
+        with:
+          compiler: ldc-${{ env.LDC_VERSION }}
+
+      - name: Build dsluck.dll
+        shell: bash
+        run: |
+          mkdir -p core/build/windows
+          ldc2 -betterC -shared -O3 -release -I=core/source \
+               -of=core/build/windows/dsluck.dll \
+               $(find core/source -name '*.d' | sort)
+          ls -la core/build/windows/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsluck-core-windows
+          path: core/build/windows/dsluck.dll
           retention-days: 30
 
   hub:

@@ -66,9 +66,18 @@ core/scripts/build_android.sh /path/to/android-ndk-r26d release
 
 **Hub APK:**
 ```bash
-# copy the .so into hub/src/androidMain/jniLibs/arm64-v8a/ (CI does this)
+# copy the .so into hub/src/androidMain/jniLibs/<abi>/ (CI does this)
 gradle :hub:assembleDebug          # JDK 17, Gradle 8.9+ (Android SDK required)
 ```
+
+**Hub on desktop (Windows/macOS/Linux):**
+```bash
+gradle :hub:run                    # runs the same Compose UI on the desktop
+```
+
+**Core on Windows:** the CI job `core-windows` produces `dsluck.dll`
+(LDC + MSVC on windows-latest). Every CI run uploads all three artifacts:
+Android `.so`s, Windows `.dll`, and the debug APK.
 
 Or just push to `main` — the workflow does all of it and uploads the APK.
 
