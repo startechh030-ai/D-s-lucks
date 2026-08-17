@@ -12,6 +12,11 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
+        // jvm("desktop") is declared imperatively above, so its source-set
+        // accessors are NOT auto-generated — pull it in explicitly.
+        // (commonMain/androidMain accessors come free from the AGP + KGP plugins.)
+        val desktopMain by getting
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
