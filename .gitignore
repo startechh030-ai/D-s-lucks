@@ -1,0 +1,19 @@
+# Gradle / Android
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
+
+# Kotlin/Compose
+.kotlin/
+
+# D core outputs (CI artifacts, host test binaries)
+core/build/
+
+# Native libs bundled into the APK come from CI, not git
+hub/src/androidMain/jniLibs/
+
+# OS noise
+.DS_Store
+Thumbs.db

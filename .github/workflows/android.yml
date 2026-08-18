@@ -1,0 +1,102 @@
+name: D's Luck — Core + Apps
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  LDC_VERSION: "1.42.0"
+
+jobs:
+  core:
+    name: Core → libdsluck.so (arm64-v8a)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LDC ${{ env.LDC_VERSION }}
+        run: |
+          curl -sL -o /tmp/ldc.tar.xz \
+            "https://github.com/ldc-developers/ldc/releases/download/v${LDC_VERSION}/ldc2-${LDC_VERSION}-linux-x86_64.tar.xz"
+          sudo mkdir -p /opt/dlang
+          sudo tar -xf /tmp/ldc.tar.xz -C /opt/dlang
+          echo "/opt/dlang/ldc2-${LDC_VERSION}-linux-x86_64/bin" >> "$GITHUB_PATH"
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+
+      - name: Host ABI smoke test (x86_64)
+        run: |
+          chmod +x core/scripts/*.sh
+          core/scripts/test_host.sh release
+
+      - name: Cross-compile D core for Android
+        run: core/scripts/build_android.sh "$ANDROID_NDK_HOME" release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsluck-core-android
+          path: core/build/android/**
+          retention-days: 30
+
+  core-windows:
+    name: Core → dsluck.dll (Windows x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LDC ${{ env.LDC_VERSION }}
+        uses: dlang-community/setup-dlang@v2
+        with:
+          compiler: ldc-${{ env.LDC_VERSION }}
+
+      - name: Build dsluck.dll
+        shell: bash
+        run: |
+          mkdir -p core/build/windows
+          ldc2 -betterC -shared -O3 -release -I=core/source \
+               -of=core/build/windows/dsluck.dll \
+               $(find core/source -name '*.d' | sort)
+          ls -la core/build/windows/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsluck-core-windows
+          path: core/build/windows/dsluck.dll
+          retention-days: 30
+
+  hub:
+    name: Hub → APK
+    needs: core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Place native core into the app (jniLibs)
+        uses: actions/download-artifact@v4
+        with:
+          name: dsluck-core-android
+          path: hub/src/androidMain/jniLibs
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Assemble debug APK
+        run: gradle :hub:assembleDebug --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsluck-hub-debug-apk
+          path: hub/build/outputs/apk/debug/*.apk
