@@ -1,0 +1,29 @@
+// ┌─────────────────────────────────────────────────────────────┐
+// │ The renderer family CONTRACT — the "header" side of the seam.│
+// │                                                              │
+// │ Any shared library exporting these four symbols is a valid   │
+// │ D's Luck renderer: the Filament shim, the null renderer, or  │
+// │ one a user writes from scratch. The loader enforces exactly  │
+// │ this list (built-in today; contract .ds files can override   │
+// │ or introduce new families tomorrow).                         │
+// └─────────────────────────────────────────────────────────────┘
+dspec 1 {
+    kind:    contract
+    name:    "renderer"
+    version: "1"
+    abi:     1
+    family:  renderer
+
+    provides {
+        fn dsl_renderer_init     "() -> i32   // 0 on success"
+        fn dsl_renderer_resize   "(w i32, h i32)"
+        fn dsl_renderer_submit   "(dt f64)    // one frame of scene truth"
+        fn dsl_renderer_shutdown "()"
+    }
+
+    lifecycle {
+        order:  "init once -> resize on surface change -> submit per frame -> shutdown last"
+        memory: "renderer owns GPU-side objects; core owns scene truth"
+        thread: "called on the engine thread"
+    }
+}

@@ -13,6 +13,8 @@ enum DslEvent : int
     coreShutdown    = 2,
     entitySpawned   = 10,
     entityKilled    = 11,
+    addonLoaded     = 100,
+    addonFailed     = 101,
     // 1000+ reserved for plugin/vendor events
     vendorStart     = 1000,
 }

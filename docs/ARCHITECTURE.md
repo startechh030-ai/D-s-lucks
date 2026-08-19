@@ -23,12 +23,15 @@ Two seams, both plain C:
 
 1. **Core seam** — `api.d` exports (`dsl_core_create`, `dsl_core_tick`, …).
    Versioned by `DSL_ABI_VERSION`. Any conforming `.so` is a valid core.
-2. **Module seam** — one small C header per module family
-   (`dsl_renderer_*`, `dsl_physics_*`, `dsl_script_*`). The core resolves
-   modules by loading shared libraries exporting that family's symbols.
+2. **Module seam** — one small C contract per module family
+   (`dsl_renderer_*`, `dsl_physics_*`, `dsl_script_*`). Every module carries a
+   **`.ds` spec** (see `docs/DSPEC.md`) declaring its kind — core · contract ·
+   plugin · extension — what it serves, what it adds, and how it behaves. The
+   core parses → validates → loads via one loader (`dsluck/addons/`).
 
 This is how a user replaces Filament with a self-written renderer, or Box3D
-with Jolt: ship a different `.so` with the same exports. No engine rebuild.
+with Jolt: ship a different `.so` + `.ds`. No engine rebuild. Custom families
+beyond the built-ins are introduced by writing a `kind: contract` spec.
 
 ## 2. Core rules (hard constraints)
 

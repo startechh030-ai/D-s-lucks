@@ -12,7 +12,7 @@ the loader's first real passenger, physics rides the same loader later.
 | # | Milestone | Deliverable | Status |
 |---|-----------|-------------|--------|
 | M0 | **Hub + core skeleton + CI** | D core (betterC) compiles to `.so` host + arm64/armv7 + windows dll; ABI smoke test passes; Hub app (projects/templates/cores tabs); GitHub Actions builds APK | ✅ done |
-| M1 | **Bridge + module loader (the swap, made real)** | JNI bridge: Cores tab shows live `libdsluck.so` values (version, ABI, tick counter). **Module system v1**: manifest.json + loader + family headers; **null renderer** module; hub loads/swaps modules on-device without rebuild | next |
+| M1 | **Module system + bridge (the swap, made real)** | ✅ **Core side done**: `.ds` spec format (core·contract·plugin·extension), parser/validator/loader in D, family contracts, **null renderer** plugin loads + probes live, Box3D + FPS-logger example specs. **Next**: JNI bridge → Cores tab shows live values + addon list on-device | core ✅ / bridge next |
 | M2 | **Pixels through the seam** | Editor shell (left file tree, bottom asset shelf, 2D UI canvas) + **Filament via `librenderer_filament.so`**: clear color → skybox. *On-device demo: swap null↔filament renderer, no rebuild* | |
 | M3 | **First 3D** | Orbit camera; spawn cone/capsule/box; HDR environment; object select + move | |
 | M4 | **Assets** | import `.glb/.gltf` (incl. renamed files — sniff magic bytes, not extensions); textures; `.mat` compile via matc; runtime conversion pipeline | |

@@ -1,0 +1,21 @@
+// An extension: script-level, sandboxed, no native compile.
+// Extensions can only use APIs the core (and loaded plugins) already
+// expose — but they distribute as a folder, and will hot-reload in the
+// editor (Wren wiring lands at M6).
+dspec 1 {
+    kind:    extension
+    name:    "fps-logger"
+    version: "0.1.0"
+    abi:     1
+    script:  "main.wren"
+
+    provides {
+        tool "FPS Logger"          // editor tool contribution
+        element fps_overlay        // attachable to any entity
+    }
+
+    lifecycle {
+        setup: "on_load() when a scene opens with this extension enabled"
+        frame: "tick(dt) per frame; writes a debug log line every second"
+    }
+}

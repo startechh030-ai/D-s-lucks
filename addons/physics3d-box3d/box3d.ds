@@ -1,0 +1,39 @@
+// ┌─────────────────────────────────────────────────────────────┐
+// │ physics3d-box3d — the "user writes new physics" example.     │
+// │                                                              │
+// │ Note it uses APIs BEYOND the family minimum (raycast_world,  │
+// │ scene elements, events). The .ds is where a new API is       │
+// │ announced: the engine learns what to look for, what gets     │
+// │ added, and how the module behaves — before any code loads.   │
+// │                                                              │
+// │ Today the library doesn't exist yet, so the loader reports   │
+// │ state: missing_library. The spec is already validated. That  │
+// │ graceful middle state is deliberate — specs are checkable    │
+// │ before code exists.                                          │
+// └─────────────────────────────────────────────────────────────┘
+dspec 1 {
+    kind:       plugin
+    name:       "physics3d-box3d"
+    version:    "0.1.0"
+    abi:        1
+    library:    physics_box3d
+    implements: physics3d@1
+
+    provides {
+        // beyond the family minimum — HOW new api is declared
+        fn raycast_world "(origin v3, dir v3) -> hit"
+
+        element rigidbody
+        element collision_volume
+
+        event contact_began = 2001
+        event contact_ended = 2002
+    }
+
+    lifecycle {
+        setup:  "init(gravity) once per scene"
+        frame:  "begin(dt) -> step(dt) -> end() per tick"
+        memory: "owns its bodies; everything freed in shutdown()"
+        thread: "engine thread; step may move to a worker later"
+    }
+}

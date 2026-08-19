@@ -19,6 +19,9 @@ import dsluck.core.loop;
 import dsluck.core.events;
 import dsluck.scene.entity;
 import dsluck.memory;
+import dsluck.addons.dspec : DsSpec, dsParseFile, dsLastError;
+import dsluck.addons.loader : AddonRegistry, dsScanAddons, dsUnloadAll, dsLoaderLastError;
+import core.stdc.string : memcpy;
 
 /// Bump on any breaking change to this file's layout or behavior.
 enum uint DSL_ABI_VERSION = 1;
@@ -70,6 +73,12 @@ void dsl_core_destroy(DslCore* core)
     if (core is null)
         return;
     core.stop();
+    if (core.addons !is null)
+    {
+        dsUnloadAll(core.addons);
+        dslFree(core.addons, AddonRegistry.sizeof);
+        core.addons = null;
+    }
     dslFree(core, DslCore.sizeof);
 }
 
@@ -126,4 +135,93 @@ int dsl_event_poll(DslCore* core)
     if (core is null)
         return 0;
     return core.events.poll();
+}
+
+// ---------------------------------------------------------------- addons
+/// A "module/addon" is anything described by a .ds spec:
+/// core · contract · plugin · extension — one pattern, four kinds.
+extern (C) struct DslAddonInfo
+{
+    char[48]  name;
+    char[24]  family;
+    char[12]  versionStr;
+    int kind;           /// 1 core · 2 contract · 3 plugin · 4 extension
+    int state;          /// 0 invalid · 1 registered · 2 loaded · 3 missing lib · 4 failed
+    int abi;
+    int providesCount;
+    int probeValue;     /// dsl_<family>_probe() result when the plugin has one
+}
+
+/// Scans a directory (one subdir level) for .ds specs and registers/loads
+/// everything found. Returns addon count (0 if the directory is absent).
+int dsl_core_load_addons(DslCore* core, const(char)* dir)
+{
+    if (core is null || dir is null)
+        return 0;
+    if (core.addons is null)
+    {
+        core.addons = cast(AddonRegistry*) dslAlloc(AddonRegistry.sizeof, "addons");
+        if (core.addons is null)
+            return 0;
+        *core.addons = AddonRegistry.init;
+    }
+    dsScanAddons(core.addons, &core.events, dir, DSL_ABI_VERSION);
+    return core.addons.count;
+}
+
+int dsl_addon_count(DslCore* core)
+{
+    if (core is null || core.addons is null)
+        return 0;
+    return core.addons.count;
+}
+
+int dsl_addon_info(DslCore* core, int index, DslAddonInfo* outInfo)
+{
+    if (core is null || core.addons is null || outInfo is null)
+        return 0;
+    if (index < 0 || index >= core.addons.count)
+        return 0;
+
+    auto e = &core.addons.entries[index];
+    memcpy(outInfo.name.ptr,       e.name.ptr,       48);
+    memcpy(outInfo.family.ptr,     e.family.ptr,     24);
+    memcpy(outInfo.versionStr.ptr, e.versionStr.ptr, 12);
+    outInfo.kind          = e.kind;
+    outInfo.state         = e.state;
+    outInfo.abi           = e.abi;
+    outInfo.providesCount = e.providesCount;
+    outInfo.probeValue    = e.probeValue;
+    return 1;
+}
+
+int dsl_addon_probe(DslCore* core, int index)
+{
+    if (core is null || core.addons is null)
+        return 0;
+    if (index < 0 || index >= core.addons.count)
+        return 0;
+    return core.addons.entries[index].probeValue;
+}
+
+/// Standalone .ds validation for tools and CI: 1 = valid spec, 0 = invalid
+/// (see dsl_last_error for the reason).
+int dsl_spec_validate_file(const(char)* path)
+{
+    if (path is null)
+        return 0;
+    DsSpec spec;
+    return dsParseFile(path, &spec) ? 1 : 0;
+}
+
+/// Last parser/validation error ("no error" when clean).
+const(char)* dsl_last_error()
+{
+    return dsLastError();
+}
+
+/// Last loader error (dlopen failures, missing symbols, ...).
+const(char)* dsl_loader_last_error()
+{
+    return dsLoaderLastError();
 }

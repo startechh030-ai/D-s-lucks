@@ -1,0 +1,31 @@
+// The engine, describing itself in its own format.
+// If a user replaces the core source (path 1: Src), this spec still
+// tells the tooling what the rebuilt core provides — the contract
+// stays honest because it is testable, not aspirational.
+dspec 1 {
+    kind:    core
+    name:    "dsluck-core"
+    version: "0.0.1-alpha"
+    abi:     1
+
+    provides {
+        fn dsl_core_create    "() -> DslCore*"
+        fn dsl_core_destroy   "(core)"
+        fn dsl_core_tick      "(core, dt f64)"
+        fn dsl_core_stats     "(core, DslStats*)"
+        fn dsl_event_poll     "(core) -> i32"
+        fn dsl_entity_spawn   "(core, kind i32, x f32, y f32, z f32) -> i32"
+        fn dsl_entity_kill    "(core, id i32) -> i32"
+        fn dsl_core_load_addons "(core, addonsDir cstr) -> i32"
+
+        element entity
+        element transform
+        element camera
+    }
+
+    lifecycle {
+        frame:  "tick(dt) drives clock -> systems -> loaded module submits"
+        memory: "manual only, no runtime GC; dsl_core_stats shows live bytes"
+        swap:   "replace libdsluck.so with any ABI v1 conforming .so"
+    }
+}

@@ -11,6 +11,11 @@ local.properties
 # D core outputs (CI artifacts, host test binaries)
 core/build/
 
+# Addon build outputs (plugins get built next to their specs)
+addons/**/*.so
+addons/**/*.dll
+addons/**/*.dylib
+
 # Native libs bundled into the APK come from CI, not git
 hub/src/androidMain/jniLibs/
 

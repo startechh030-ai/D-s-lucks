@@ -1,0 +1,30 @@
+// ┌─────────────────────────────────────────────────────────────┐
+// │ renderer-null — the reference plugin.                        │
+// │ Demonstrates the whole "connect new logic" story: one spec,  │
+// │ one library, zero engine changes.                            │
+// └─────────────────────────────────────────────────────────────┘
+dspec 1 {
+    kind:       plugin
+    name:       "renderer-null"
+    version:    "0.0.1"
+    abi:        1
+    library:    renderer_null        // base name; loader adds lib/.so/.dll
+    implements: renderer@1
+
+    provides {
+        // the family contract — nothing more, nothing less
+        fn dsl_renderer_init     "() -> i32  // 0 on success"
+        fn dsl_renderer_resize   "(w i32, h i32)"
+        fn dsl_renderer_submit   "(dt f64)"
+        fn dsl_renderer_shutdown "()"
+        // plus the optional health probe every plugin may carry
+        fn dsl_renderer_probe    "() -> u32"
+    }
+
+    lifecycle {
+        order:  "init before first submit; shutdown last"
+        frame:  "submit(dt) once per core tick"
+        memory: "stateless — zero allocations by design"
+        thread: "engine thread only"
+    }
+}

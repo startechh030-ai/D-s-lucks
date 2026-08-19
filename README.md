@@ -33,9 +33,16 @@ dsluck/
 ├── core/                  # THE ENGINE CORE — D, -betterC, no GC, manual memory
 │   ├── source/
 │   │   ├── api.d          # ← the stable C ABI. The whole replaceability story.
-│   │   └── dsluck/        # loop, time, events, entity pool, camera, memory
+│   │   └── dsluck/        # loop, time, events, entities, camera, memory,
+│   │                      #   addons/ = .ds parser, validator, plugin loader
+│   ├── contracts/         # family contracts as .ds files ("header" side)
+│   ├── core.dsluck.ds     # the engine describing itself in its own format
 │   ├── scripts/           # build_host.sh / build_android.sh / test_host.sh
 │   └── tests/             # C smoke test driving the ABI
+├── addons/                # everything that connects: plugins + extensions
+│   ├── renderer-null/     #   reference plugin: loads + answers its probe
+│   ├── physics3d-box3d/   #   "user writes new physics" spec (lib arrives M5)
+│   └── fps-logger/        #   script extension example (Wren arrives M6)
 ├── hub/                   # Compose Multiplatform launcher (this app's M0)
 │   └── src/               # commonMain (UI) · androidMain · desktopMain
 ├── docs/                  # ARCHITECTURE.md · ROADMAP.md · DECISIONS.md

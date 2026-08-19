@@ -11,6 +11,7 @@ import dsluck.core.time;
 import dsluck.core.events;
 import dsluck.scene.entity;
 import dsluck.scene.camera;
+import dsluck.addons.loader : AddonRegistry;
 
 struct DslCore
 {
@@ -19,6 +20,9 @@ struct DslCore
     EntityPool entities;
     Camera     mainCamera;
     bool       running;
+
+    /// Lazily allocated on first addon scan (keeps a fresh core ~181 KB).
+    AddonRegistry* addons;
 
     void start() @nogc nothrow
     {
