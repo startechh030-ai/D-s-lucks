@@ -13,14 +13,15 @@ the loader's first real passenger, physics rides the same loader later.
 |---|-----------|-------------|--------|
 | M0 | **Hub + core skeleton + CI** | D core (betterC) compiles to `.so` host + arm64/armv7 + windows dll; ABI smoke test passes; Hub app (projects/templates/cores tabs); GitHub Actions builds APK | ✅ done |
 | M1 | **Module system + bridge (the swap, made real)** | ✅ **Core side done**: `.ds` spec format (core·contract·plugin·extension), parser/validator/loader in D, family contracts, **null renderer** plugin loads + probes live, Box3D + FPS-logger example specs. **Next**: JNI bridge → Cores tab shows live values + addon list on-device | core ✅ / bridge next |
-| M2 | **Pixels through the seam** | Editor shell (left file tree, bottom asset shelf, 2D UI canvas) + **Filament via `librenderer_filament.so`**: clear color → skybox. *On-device demo: swap null↔filament renderer, no rebuild* | |
+| M2 | **Pixels through the seam** | Editor shell arrives **native (SDL shell + engine-rendered UI, per D12)**: left file tree, bottom asset shelf, 2D UI canvas; **Filament via `librenderer_filament.so`** with the three tiers (D14) selectable in settings; play-in-editor preview runs the main script on a second core instance. *On-device demo: swap null↔filament renderer, no rebuild* | |
 | M3 | **First 3D** | Orbit camera; spawn cone/capsule/box; HDR environment; object select + move | |
 | M4 | **Assets** | import `.glb/.gltf` (incl. renamed files — sniff magic bytes, not extensions); textures; `.mat` compile via matc; runtime conversion pipeline | |
 | M5 | **Physics** | Box3D module (gravity, collisions on primitives) + Box2D for 2D; *swapability demo: same scene, Jolt `.so` dropped in* | |
 | M6 | **Scripting** | Wren embedded; spawn/move/destroy entities from `.wren`; hot-reload on save; script-defined elements attach to live entities | |
 | M7 | **Sound** | Oboe-backed `sound` module: load, play, loop, 3D pan | |
 | M8 | **Game data** | `.anim` read/write (tweak-only, no editor); procedural cloud gen sample in D; scene save/load | |
-| M9 | **Runner polish** | Standalone game runner mode inside editor app (no APK export yet, per spec); perf overlay v2; memory graphs | |
+| M9 | **Runner polish** | Standalone game runner mode inside editor app; perf overlay v2; memory graphs | |
+| M10 | **Export system** | Player templates (`dsluck-player-*`) published by CI; bundler + two-phase bake (script bake → manifest, profile bake → explained tier choice); Android Layer 1 (quick, no SDK) + Layer 2 (full, signed); win/linux one-click; iOS Xcode bundle (D13) | |
 
 Post-M9 (outside first-stage scope, captured so we never design against them):
 

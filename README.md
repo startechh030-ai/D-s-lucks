@@ -90,6 +90,12 @@ Or just push to `main` — the workflow does all of it and uploads the APK.
 
 ## Design documents
 
+- [`docs/PIPELINE.md`](docs/PIPELINE.md) — **THE MAP**: editor→device, shells, tiers, export
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the ABI, module contracts, memory rules
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — milestones M0 → M9
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) — answers & adjustments to the original spec
+- [`docs/DSPEC.md`](docs/DSPEC.md) — the `.ds` contract file (src/plugin/extension/contract)
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — milestones M0 → M10
+- [`docs/DECISIONS.md`](docs/DECISIONS.md) — answers & adjustments to the original spec (D1–D14)
+
+> Editor note (D12): the shipped editor is **native D, self-hosted** — the
+> Kotlin app here is the Android launcher/shell, and the desktop Compose hub
+> is an internal dev tool only.

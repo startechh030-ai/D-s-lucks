@@ -113,3 +113,16 @@ attach it to any entity in a live scene (per spec: dynamic, live adding).
 - Platform layer may stream asset decode on worker threads, publishing
   results via the event bus. Modules keep their own threads internal.
 - Determinism at the core: same inputs + same dt sequence ⇒ same scene state.
+
+## 9. Editors, shells and the path to a shipped game
+
+- The shipped editor is **native D and self-hosted**: its UI renders through
+  the engine's renderer. Kotlin (Android) and SDL (desktop) are only thin
+  **shells** — surface, input, `dsl_core_*` calls (D12).
+- The renderer module carries three presentation tiers per export with
+  runtime device detection + override (D14).
+- Games ship via Godot-style **player templates** produced by CI plus a
+  two-phase bake (script bake → manifest; profile bake → explained tier
+  contract). Android has Quick and Full layers; iOS exports an
+  Xcode-ready bundle (D13).
+- The full, authoritative map lives in `docs/PIPELINE.md`.

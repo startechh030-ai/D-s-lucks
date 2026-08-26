@@ -52,6 +52,37 @@ consequences:
 - The Hub prints the device's `SUPPORTED_ABIS` on the Cores tab so the
   32/64-bit userspace question is answered by the app itself on first run.
 
+### D12 — The shipped editor is native D, self-hosted; Kotlin is shell-only
+Spec: *"Other Windows, Linux, Mac editors are not supposed to use Kotlin —
+it breaks professionalism and GC issues in editor."*
+Decision: agreed and adopted. The editor's UI is rendered by the engine's
+own renderer (immediate-mode, Godot/Unreal pattern) — one UI codebase, in D,
+for every platform. Kotlin remains only as the Android launcher/host shell;
+desktop gets a thin SDL shell; iOS an Xcode host shell. Shells open surfaces,
+feed input, and call `dsl_core_*` — nothing more. The desktop Compose hub in
+this repo is relegated to internal dev convenience, never shipped.
+
+### D13 — Export = Godot-style player templates ("build files")
+Spec: *"For building the game we have a build binary file… user downloads a
+build file each for the device they target."*
+Decision: CI publishes prebuilt player templates per platform
+(`dsluck-player-*`); export = template + project data + baked manifest.
+Android ships two layers exactly per spec: **Layer 1 Quick Build** (baseline
+APK + scripts, no SDK/NDK needed) and **Layer 2 Full Build** (SDK/NDK native
+compile, signed APK). iOS exports an Xcode-ready bundle (final sign = user's
+Xcode; Apple's rule). Full detail in `docs/PIPELINE.md`.
+
+### D14 — One renderer module, three tiers, vendored Filament (never forked)
+Spec: *"Clone filament entirely… share into Epic / Compatible / Simple… the
+3 can be inside a project."*
+Decision: the Filament shim is ONE module exposing three presentation tiers;
+all tiers bundle per export; selection is runtime device-capability + dev
+override. `renderer/filament/` contains the shim + scripts fetching prebuilt
+Filament binaries (vendored artifacts, no upstream source tree in our repo).
+Tier names are working names — "Epic" gets rebranded before public release
+(trademark gravity). A user-written custom renderer module plugs into the
+same tier slots via `core/contracts/renderer.ds`.
+
 ### D6 — No 3D model editing in the engine
 Spec: *"No 3d editing tool… basic moves (intrude/extrude/scale) only as a
 later, separate lightweight C++/core plugin."*
