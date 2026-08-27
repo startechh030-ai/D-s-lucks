@@ -52,14 +52,13 @@ Per the design session — the renderer is **not limited to one per project**;
 one Filament-shim module carries three presentation tiers, all bundled per
 export, with runtime device detection + developer override:
 
-| Tier (working name*) | Backend target | For |
+| Tier | Backend target | For |
 |---|---|---|
-| **Epic*** | Vulkan, full feature set | desktops, flagship phones |
-| **Compatible** | Vulkan conservative / GLES3 high | the broad middle |
+| **Forward+** | Vulkan, full feature set | desktops, flagship phones |
+| **Normal** | Vulkan conservative / GLES3 high | the broad middle |
 | **Simple** | GLES3 minimum, lean formats | Go-edition devices, 4GB RAM |
 
-\* *Working names. "Epic" in particular needs a rebrand before public release
-(trademark gravity). Candidates: Prime / Balanced / Feather.*
+*Tier names are final: Forward+ / Normal / Simple (RIP "Epic" 💔).*
 
 - **Filament is vendored, not forked**: `renderer/filament/` = our C-shim +
   scripts fetching prebuilt Filament binaries per platform/ABI. No upstream

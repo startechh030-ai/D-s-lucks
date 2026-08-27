@@ -60,6 +60,16 @@ for entry in "${ABIS[@]}"; do
 
     echo "==> [$ABI] ldc2 ${TRIPLE}"
     "$LDC" "${FLAGS[@]}" "${SOURCES[@]}"
+
+    # JNI bridge (shell <-> core), per ABI, linked against the fresh core.
+    if [[ -f "$CORE_DIR/bridge/bridge_jni.c" ]]; then
+        "$CLANG" -shared -fPIC -O2 \
+            -o "$OUT_DIR/$ABI/libdsluck_jni.so" \
+            "$CORE_DIR/bridge/bridge_jni.c" \
+            -L"$OUT_DIR/$ABI" -ldsluck \
+            -Wl,-soname,libdsluck_jni.so "-Wl,-rpath,\$ORIGIN"
+        echo "==> [$ABI] clang bridge_jni.c -> libdsluck_jni.so"
+    fi
 done
 
 echo "==> ok: $OUT_DIR"

@@ -73,15 +73,19 @@ compile, signed APK). iOS exports an Xcode-ready bundle (final sign = user's
 Xcode; Apple's rule). Full detail in `docs/PIPELINE.md`.
 
 ### D14 — One renderer module, three tiers, vendored Filament (never forked)
-Spec: *"Clone filament entirely… share into Epic / Compatible / Simple… the
-3 can be inside a project."*
-Decision: the Filament shim is ONE module exposing three presentation tiers;
-all tiers bundle per export; selection is runtime device-capability + dev
+Spec: *"Clone filament entirely… share into tiers… the 3 can be inside a
+project."*
+Decision: the Filament shim is ONE module exposing three presentation tiers:
+**Forward+** (full features — desktops/flagships), **Normal** (the broad
+middle), **Simple** (GLES3 floor — Android Go class). All tiers bundle per
+export; selection is runtime device-capability detection + developer
 override. `renderer/filament/` contains the shim + scripts fetching prebuilt
 Filament binaries (vendored artifacts, no upstream source tree in our repo).
-Tier names are working names — "Epic" gets rebranded before public release
-(trademark gravity). A user-written custom renderer module plugs into the
-same tier slots via `core/contracts/renderer.ds`.
+A user-written custom renderer module plugs into the same tier slots via
+`core/contracts/renderer.ds`.
+(Tier naming history: originally "Epic/Compatible/Simple"; renamed after a
+sobering reminder about trademark gravity 💔. Forward+ / Normal / Simple is
+final.)
 
 ### D6 — No 3D model editing in the engine
 Spec: *"No 3d editing tool… basic moves (intrude/extrude/scale) only as a

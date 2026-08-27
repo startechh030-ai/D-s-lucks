@@ -11,7 +11,7 @@ env:
 
 jobs:
   core:
-    name: Core → libdsluck.so (arm64-v8a)
+    name: Core → .so (Android arm64/armv7) + Linux player
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,15 +32,23 @@ jobs:
       - name: Host ABI smoke test (x86_64)
         run: |
           chmod +x core/scripts/*.sh
-          core/scripts/test_host.sh release
+          bash core/scripts/test_host.sh release
 
       - name: Cross-compile D core for Android
-        run: core/scripts/build_android.sh "$ANDROID_NDK_HOME" release
+        run: bash core/scripts/build_android.sh "$ANDROID_NDK_HOME" release
 
-      - uses: actions/upload-artifact@v4
+      - name: Package player template — Android
+        uses: actions/upload-artifact@v4
         with:
-          name: dsluck-core-android
+          name: dsluck-player-android
           path: core/build/android/**
+          retention-days: 30
+
+      - name: Package player template — Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsluck-player-linux
+          path: core/build/host/libdsluck.so
           retention-days: 30
 
   core-windows:
@@ -65,7 +73,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: dsluck-core-windows
+          name: dsluck-player-windows
           path: core/build/windows/dsluck.dll
           retention-days: 30
 
@@ -76,10 +84,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Place native core into the app (jniLibs)
+      - name: Place native core + bridge into the app (jniLibs)
         uses: actions/download-artifact@v4
         with:
-          name: dsluck-core-android
+          name: dsluck-player-android
           path: hub/src/androidMain/jniLibs
 
       - name: Setup JDK 17
@@ -100,3 +108,4 @@ jobs:
         with:
           name: dsluck-hub-debug-apk
           path: hub/build/outputs/apk/debug/*.apk
+          retention-days: 30

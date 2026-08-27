@@ -8,9 +8,10 @@ actual fun platformName(): String =
 actual fun deviceAbis(): String =
     Build.SUPPORTED_ABIS.joinToString(" · ")
 
-actual fun nativeCoreStatus(): String = try {
-    System.loadLibrary("dsluck")
-    "libdsluck.so loaded — ABI bridge arrives in M1"
-} catch (e: UnsatisfiedLinkError) {
-    "not bundled in this build — CI job 'core' produces it"
-}
+actual fun nativeCoreStatus(): String =
+    if (DsluckBridge.available()) {
+        "${DsluckBridge.engineName()} ${DsluckBridge.engineVersion()} · " +
+            "ABI v${DsluckBridge.abiVersion()} — LIVE on this device"
+    } else {
+        "not bundled in this build — CI job 'core' produces it"
+    }
