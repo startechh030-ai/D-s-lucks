@@ -93,6 +93,7 @@ Or just push to `main` — the workflow does all of it and uploads the APK.
 - [`docs/PIPELINE.md`](docs/PIPELINE.md) — **THE MAP**: editor→device, shells, tiers, export
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the ABI, module contracts, memory rules
 - [`docs/DSPEC.md`](docs/DSPEC.md) — the `.ds` contract file (src/plugin/extension/contract)
+- [`docs/EDITOR.md`](docs/EDITOR.md) — M2 blueprint: native editor, UI kit, contract v1.1
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — milestones M0 → M10
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) — answers & adjustments to the original spec (D1–D14)
 
